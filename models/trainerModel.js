@@ -8,9 +8,12 @@ const trainerModel = new mongoose.Schema(
       lastName: { type: String, default: "" },
     },
     email: { type: String },
+    DOB: { type: Date },
+    gender: { type: String, enum: ["Male", "Female"] },
     password: { type: String },
     address: { type: String },
     role: { type: String },
+    isApproved: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
   },
   {

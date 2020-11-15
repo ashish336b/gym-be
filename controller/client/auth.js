@@ -1,51 +1,33 @@
 const router = require("express").Router();
 const clientModel = require("../../models/clientModel");
-const bcrypt = require("bcryptjs");
 const { verifyClientToken } = require("../../middleware/authGuard");
+const Auth = require("../Auth/Auth");
 /**
  * method : POST
  * url : /client/register
  */
 router.post("/register", async (req, res, next) => {
-  try {
-    req.body.password = bcrypt.hashSync(
-      req.body.password,
-      bcrypt.genSaltSync(10)
-    );
-    await new clientModel(req.body).save();
-    res.json({ message: "success", error: false });
-  } catch (error) {
-    console.log(error);
-    res.json({ message: "could not register", error: true });
-  }
+  let register = await new Auth(clientModel).register(req);
+  if (register) return res.json({ message: "success", error: false });
+  return res.json({ message: "could not register", error: true });
 });
 /**
  * method : POST
  * url : /admin/login
  */
 router.post("/login", async (req, res, next) => {
-  const jwt = require("jsonwebtoken");
-  const user = await clientModel.findOne({
-    email: req.body.email,
-    isDeleted: false,
+  let token = await new Auth(clientModel).login(
+    {
+      email: req.body.email,
+      isDeleted: false,
+    },
+    req
+  );
+  if (token) return res.json({ token: token, error: null });
+  return res.status(403).json({
+    error: true,
+    message: "Password Or username doesn't Match",
   });
-  if (!user) {
-    return res.status(403).json({
-      error: true,
-      message: "Password Or username doesn't Match",
-    });
-  }
-  if (!bcrypt.compareSync(req.body.password, user.password)) {
-    return res.status(403).json({
-      error: true,
-      message: "Password Or username doesn't Match",
-    });
-  }
-  user.password = null;
-  let token = await jwt.sign({ user: user }, "12helloworld12", {
-    expiresIn: "12h",
-  });
-  res.json({ token: token, error: null });
 });
 /**
  * method : get
