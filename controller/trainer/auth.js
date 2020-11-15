@@ -1,8 +1,7 @@
 const router = require("express").Router();
 const trainerModel = require("../../models/trainerModel");
-const bcrypt = require("bcryptjs");
 const { verifyTrainerToken } = require("../../middleware/authGuard");
-const Auth = require("../Auth/Auth");
+const Auth = require("../../helpers/Auth");
 /**
  * method : POST
  * url : /admin/register

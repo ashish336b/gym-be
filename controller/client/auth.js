@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const clientModel = require("../../models/clientModel");
 const { verifyClientToken } = require("../../middleware/authGuard");
-const Auth = require("../Auth/Auth");
+const Auth = require("../../helpers/Auth");
 /**
  * method : POST
  * url : /client/register

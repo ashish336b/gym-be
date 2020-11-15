@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const adminModel = require("../../models/adminModel");
 const { verifyAdminToken } = require("../../middleware/authGuard");
-const Auth = require("../Auth/Auth");
+const Auth = require("../../helpers/Auth");
 /**
  * method : POST
  * url : /admin/register
