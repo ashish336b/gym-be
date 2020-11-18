@@ -27,4 +27,11 @@ router.post("/", async (req, res, next) => {
     res.json({ error: true, message: "error check console" });
   }
 });
+/**
+ * method : PUT
+ * url : /trainer/services/:id
+ */
+router.put("/:id", async (req, res, next) => {
+  res.json("edit");
+});
 module.exports = router;
