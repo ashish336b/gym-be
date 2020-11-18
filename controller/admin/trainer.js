@@ -1,12 +1,11 @@
 const router = require("express").Router();
 const trainerModel = require("../../models/trainerModel");
-const { verifyAdminToken } = require("../../middleware/authGuard");
 const paginate = require("../../helpers/paginate");
 /**
  * method : GET
  * url : /admin/trainer
  */
-router.get("/", verifyAdminToken, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   let paginatedData = await paginate(
     trainerModel,
     {

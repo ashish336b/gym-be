@@ -1,16 +1,30 @@
+const serviceModel = require("../../models/serviceModel");
 const router = require("express").Router();
 /**
  * method : GET
  * url : /trainer/services
  */
 router.get("/", async (req, res, next) => {
-  res.json("paginated services");
+  let data = await serviceModel
+    .find({
+      isDeleted: false,
+      addedBy: req.trainerData.user._id,
+    })
+    .populate("addedBy");
+  res.json(data);
 });
 /**
  * method : POST
  * url : /trainer/services
  */
 router.post("/", async (req, res, next) => {
-  res.json("create services");
+  req.body.addedBy = req.trainerData.user._id;
+  try {
+    await new serviceModel(req.body).save();
+    res.json({ message: "service created", error: false });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "error check console" });
+  }
 });
 module.exports = router;
