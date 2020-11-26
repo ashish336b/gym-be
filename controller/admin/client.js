@@ -20,10 +20,11 @@ router.get("/:id", async (req, res, next) => {
 /**
  * method : DELETE
  * url : /admin/client/:id
+ * Desc : delete client
  */
 router.delete("/:id", async (req, res, next) => {
   try {
-    await clientModel.findByIdAndUpdate(req.params.id, { isDeleted: false });
+    await clientModel.findByIdAndUpdate(req.params.id, { isDeleted: true });
     res.json({ error: null, message: "successfully deleted" });
   } catch (error) {
     console.log(error);
