@@ -31,6 +31,20 @@ router.post("/", async (req, res, next) => {
   }
 });
 /**
+ * method : PUT
+ * url : /trainer/services/:id
+ * Desc : edit trainer data
+ */
+router.put("/:id", async (req, res, next) => {
+  try {
+    await serviceModel.findByIdAndUpdate(req.params.id, req.body);
+    res.json({ message: "edited Successfully", error: null });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "error occured, Look at console", error: true });
+  }
+});
+/**
  * method : GET
  * url : /trainer/{id}/services/availability
  * Desc : get availability date for 1 to 1 session
@@ -74,13 +88,5 @@ router.post("/availability", async (req, res, next) => {
     console.log(error);
     res.json({ error: true, message: "Error occured please look at console" });
   }
-});
-/**
- * method : PUT
- * url : /trainer/services/:id
- * Desc : edit trainer data
- */
-router.put("/:id", async (req, res, next) => {
-  res.json("edit");
 });
 module.exports = router;
