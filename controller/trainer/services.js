@@ -45,6 +45,20 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 /**
+ * method : DELETE
+ * url : /trainer/services/:id
+ * Desc : delete services by trainer
+ */
+router.delete("/:id", async (req, res, next) => {
+  try {
+    await serviceModel.findByIdAndUpdate(req.params.id, { isDeleted: true });
+    res.json({ message: "Deleted Successfully", error: null });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Error! Look at console", error: true });
+  }
+});
+/**
  * method : GET
  * url : /trainer/{id}/services/availability
  * Desc : get availability date for 1 to 1 session
@@ -87,6 +101,36 @@ router.post("/availability", async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.json({ error: true, message: "Error occured please look at console" });
+  }
+});
+/**
+ * method : PUT
+ * url : /trainer/services/availability/:id
+ * Desc : edit availability by trainer
+ */
+router.put("/availability/:id", async (req, res, next) => {
+  try {
+    await availabilityModel.findByIdAndUpdate(req.params.id, req.body);
+    res.json({ error: null, message: "Availability Updated Successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error! have a look at console" });
+  }
+});
+/**
+ * method : DELETE
+ * url : /trainer/service/availability/:id
+ * Desc : delete availability by trainer
+ */
+router.delete("/availability/:id", async (req, res, next) => {
+  try {
+    await availabilityModel.findByIdAndUpdate(req.params.id, {
+      isDeleted: true,
+    });
+    res.json({ message: "Deleted Successfully", error: null });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "error, Look at console", error: true });
   }
 });
 module.exports = router;
