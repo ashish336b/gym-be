@@ -5,6 +5,7 @@ const Auth = require("../../helpers/Auth");
 /**
  * method : POST
  * url : /admin/register
+ * Desc : Register admin
  */
 router.post("/register", async (req, res, next) => {
   let register = await new Auth(adminModel).register(req);
@@ -14,6 +15,7 @@ router.post("/register", async (req, res, next) => {
 /**
  * method : POST
  * url : /admin/login
+ * Desc : login admin
  */
 router.post("/login", async (req, res, next) => {
   let token = await new Auth(adminModel).login(
@@ -32,6 +34,7 @@ router.post("/login", async (req, res, next) => {
 /**
  * method : get
  * url : /me
+ * Desc: get logged in admin data
  */
 router.get("/me", verifyAdminToken, async (req, res, next) => {
   res.json(req.adminData.user);

@@ -4,6 +4,7 @@ const paginate = require("../../helpers/paginate");
 /**
  * method : GET
  * url : /admin/trainer
+ * Desc : list all trainer
  */
 router.get("/", async (req, res, next) => {
   let paginatedData = await paginate(
@@ -24,6 +25,7 @@ router.get("/", async (req, res, next) => {
 /**
  * method : GET
  * url : /admin/trainer/:id
+ * Desc : get specific trainer by id
  */
 router.get("/:id", async (req, res, next) => {
   try {
@@ -39,6 +41,7 @@ router.get("/:id", async (req, res, next) => {
 /**
  * method : GET
  * url : /admin/trainer/:id/approve
+ * Desc : Approve sign up request send by trainer
  */
 router.post("/:id/approve", async (req, res, next) => {
   try {
@@ -52,6 +55,7 @@ router.post("/:id/approve", async (req, res, next) => {
 /**
  * method : DELETE
  * url : /admin/trainer/:id
+ * Desc : Delete trainer
  */
 router.delete("/:id", async (req, res, next) => {
   try {

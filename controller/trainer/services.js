@@ -4,6 +4,7 @@ const availabilityModel = require("../../models/availabilityModel");
 /**
  * method : GET
  * url : /trainer/services
+ * Desc : get all services by logged in trainer
  */
 router.get("/", async (req, res, next) => {
   let data = await serviceModel
@@ -17,6 +18,7 @@ router.get("/", async (req, res, next) => {
 /**
  * method : POST
  * url : /trainer/services
+ * Desc : create services
  */
 router.post("/", async (req, res, next) => {
   req.body.addedBy = req.trainerData.user._id;
@@ -31,6 +33,7 @@ router.post("/", async (req, res, next) => {
 /**
  * method : GET
  * url : /trainer/{id}/services/availability
+ * Desc : get availability date for 1 to 1 session
  */
 router.get("/availability", async (req, res, next) => {
   res.json(
@@ -42,6 +45,7 @@ router.get("/availability", async (req, res, next) => {
 /**
  * method : POST
  * url : /trainer/services/availability
+ * Desc : create availability for one to one session
  */
 router.post("/availability", async (req, res, next) => {
   req.body.trainer = req.trainerData.user._id;
@@ -74,6 +78,7 @@ router.post("/availability", async (req, res, next) => {
 /**
  * method : PUT
  * url : /trainer/services/:id
+ * Desc : edit trainer data
  */
 router.put("/:id", async (req, res, next) => {
   res.json("edit");
