@@ -31,6 +31,7 @@ router.post("/:id/requestServices/:serviceId", async (req, res, next) => {
 /**
  * method : GET
  * url : /client/trainer/listRequest
+ * Desc : list all requested services to trainer
  */
 router.get("/listRequest", async (req, res, next) => {
   try {
@@ -42,6 +43,24 @@ router.get("/listRequest", async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.json({ error: true, message: "Error look at console" });
+  }
+});
+/**
+ * method : GET
+ * url : /client/trainer/listAcceptedRequest
+ * Desc :list all accepted request sent to trainer
+ */
+router.get("/listAcceptedRequest", async (req, res, next) => {
+  try {
+    let acceptedRequest = await RequestModel.find({
+      isDeleted: false,
+      clientId: objectId(req.clientData.user._id),
+      isAccepted: true,
+    });
+    res.json({ error: null, data: acceptedRequest });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: null, message: "Error look at console" });
   }
 });
 /**

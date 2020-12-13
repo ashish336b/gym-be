@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 
 const requestModel = new mongoose.Schema(
   {
-    clientId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    trainerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    clientId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "client",
+    },
+    trainerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "trainer",
+    },
     serviceId: { type: mongoose.Schema.Types.ObjectId, required: true },
     requestType: { type: String, required: true },
     nutrition: {
@@ -25,6 +33,7 @@ const requestModel = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "comments", default: [] },
     ],
     isAccepted: { type: Boolean, default: false },
+    isDeclined: { type: Boolean, default: false },
     isCompleted: { type: Boolean, default: false },
     isPaid: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },

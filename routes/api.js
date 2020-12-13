@@ -37,4 +37,9 @@ router.use(
   verifyTrainerToken,
   require("../controller/trainer/services")
 );
+router.use(
+  "/trainer/client",
+  verifyTrainerToken,
+  require("../controller/trainer/client")
+);
 module.exports = router;
