@@ -1,43 +1,48 @@
 const router = require("express").Router();
 const paypal = require("paypal-rest-sdk");
+const config = require("../../config");
+const serviceModel = require("../../models/serviceModel");
+const { verifyClientToken } = require("../../middleware/authGuard");
+const requestModel = require("../../models/RequestModel");
+const paymentModel = require("../../models/paymentModel");
 /**
  * method : GET
  * url : /client/payment
  * Desc : Make your payment
  */
-router.get("/", async (req, res, next) => {
-  paypal.configure({
-    mode: "sandbox", //sandbox or live
-    client_id:
-      "AVXxWZaYTznAA4bFDUjZBolgt_G_j2JN6DRYkp5xCpXLXAnsGl_YSWEp1aG52RiP_VmebIQTyYHqBtDR",
-    client_secret:
-      "ED_OMQI3hnGNeGGgKyRTAOMreL-Q6-QisAALUSMSlH059sO1LO02tUvmn-nQhoXFsJE0M4vfkJTJdAqk",
-  });
+router.post("/", verifyClientToken, async (req, res, next) => {
+  let itemList = [];
+  for (let i = 0; i < req.body.services.length; i++) {
+    let getService = await serviceModel.findById(req.body.services[i]);
+    itemList.push({
+      name: getService.name,
+      sku: getService.name,
+      price: getService.price,
+      currency: "USD",
+      quantity: 1,
+    });
+  }
+  let totalPrice = itemList.reduce((acc, curr) => {
+    return acc + parseFloat(curr.price);
+  }, 0);
+  paypal.configure(config.paypal);
   let createPayment = {
     intent: "sale",
     payer: {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: "http://localhost:3000/client/payment/successPayment",
+      return_url: `http://localhost:3000/client/payment/successPayment?amount=${totalPrice}&requests=${req.body.request}`,
       cancel_url: "http://localhost:3000/client/payment/cancelPayment",
     },
     transactions: [
       {
         item_list: {
-          items: [
-            {
-              name: "item",
-              sku: "item",
-              price: "10.00",
-              currency: "USD",
-              quantity: 1,
-            },
-          ],
+          items: itemList,
         },
         amount: {
           currency: "USD",
-          total: "10.00",
+          total: `${totalPrice}`,
         },
         description: "This is the payment description.",
       },
@@ -47,7 +52,7 @@ router.get("/", async (req, res, next) => {
     if (error) {
       throw error;
     } else {
-      res.json(payment);
+      res.json(payment.links[1].href);
     }
   });
 });
@@ -56,7 +61,10 @@ router.get("/", async (req, res, next) => {
  * url : /client/payment/cancelPayment
  */
 router.get("/cancelPayment", async (req, res, next) => {
-  res.json({ error: null, messasge: "cancel payment" });
+  res.json({
+    error: null,
+    messasge: "Error Occured in Paypal. Your payment is canceled",
+  });
 });
 /**
  * method : GET
@@ -65,13 +73,14 @@ router.get("/cancelPayment", async (req, res, next) => {
 router.get("/successPayment", async (req, res, next) => {
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
+  console.log(req.query.requests);
   const execute_payment_json = {
     payer_id: payerId,
     transactions: [
       {
         amount: {
           currency: "USD",
-          total: "10.00",
+          total: req.query.amount,
         },
       },
     ],
@@ -79,11 +88,19 @@ router.get("/successPayment", async (req, res, next) => {
   paypal.payment.execute(
     paymentId,
     execute_payment_json,
-    function (error, payment) {
+    async (error, payment) => {
       if (error) {
         console.log(error.response);
-        throw error;
+        return res.json({ error: true, message: "Cannot execute payment" });
       } else {
+        let requestIds = req.query.requests.split(",");
+        for (let i = 0; i < requestIds.length; i++) {
+          await requestModel.findByIdAndUpdate(requestIds[i], { isPaid: true });
+          await new paymentModel({
+            paymentAmount: req.query.amount,
+            request: requestIds[i],
+          }).save();
+        }
         res.send("your payment is successfull.");
       }
     }
