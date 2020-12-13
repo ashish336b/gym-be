@@ -1,11 +1,11 @@
 const router = require("express").Router();
+const paypal = require("paypal-rest-sdk");
 /**
  * method : GET
  * url : /client/payment
  * Desc : Make your payment
  */
 router.get("/", async (req, res, next) => {
-  let paypal = require("paypal-rest-sdk");
   paypal.configure({
     mode: "sandbox", //sandbox or live
     client_id:
@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: "http://localhost:3000/client/payment/returnUrl",
+      return_url: "http://localhost:3000/client/payment/successPayment",
       cancel_url: "http://localhost:3000/client/payment/cancelPayment",
     },
     transactions: [
@@ -29,7 +29,7 @@ router.get("/", async (req, res, next) => {
             {
               name: "item",
               sku: "item",
-              price: "1.00",
+              price: "10.00",
               currency: "USD",
               quantity: 1,
             },
@@ -37,7 +37,7 @@ router.get("/", async (req, res, next) => {
         },
         amount: {
           currency: "USD",
-          total: "1.00",
+          total: "10.00",
         },
         description: "This is the payment description.",
       },
@@ -47,7 +47,6 @@ router.get("/", async (req, res, next) => {
     if (error) {
       throw error;
     } else {
-      console.log("Create Payment Response");
       res.json(payment);
     }
   });
@@ -63,7 +62,31 @@ router.get("/cancelPayment", async (req, res, next) => {
  * method : GET
  * url : /client/payment/returnUrl
  */
-router.get("/returnUrl", async (req, res, next) => {
-  res.json({ error: null, messasge: "return payment" });
+router.get("/successPayment", async (req, res, next) => {
+  const payerId = req.query.PayerID;
+  const paymentId = req.query.paymentId;
+  const execute_payment_json = {
+    payer_id: payerId,
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: "10.00",
+        },
+      },
+    ],
+  };
+  paypal.payment.execute(
+    paymentId,
+    execute_payment_json,
+    function (error, payment) {
+      if (error) {
+        console.log(error.response);
+        throw error;
+      } else {
+        res.send("your payment is successfull.");
+      }
+    }
+  );
 });
 module.exports = router;
