@@ -15,7 +15,7 @@ router.post("/register", async (req, res, next) => {
 /**
  * method : POST
  * url : /client/login
- * Desc : Login cleint
+ * Desc : Login client
  */
 router.post("/login", async (req, res, next) => {
   let token = await new Auth(clientModel).login(
@@ -28,7 +28,7 @@ router.post("/login", async (req, res, next) => {
   if (token) return res.json({ token: token, error: null });
   return res.status(403).json({
     error: true,
-    message: "Password Or username doesn't Match",
+    message: "Password or Username doesn't Match",
   });
 });
 /**

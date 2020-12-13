@@ -24,7 +24,7 @@ router.post("/", async (req, res, next) => {
   req.body.addedBy = req.trainerData.user._id;
   try {
     await new serviceModel(req.body).save();
-    res.json({ message: "service created", error: false });
+    res.json({ message: "service created", error: null });
   } catch (error) {
     console.log(error);
     res.json({ error: true, message: "error check console" });
