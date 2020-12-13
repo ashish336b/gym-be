@@ -28,6 +28,7 @@ router.use(
   verifyClientToken,
   require("../controller/client/trainer")
 );
+router.use("/client/payment", require("../controller/client/payment"));
 /**
  * Trainer Routes
  */

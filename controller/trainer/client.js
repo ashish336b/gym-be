@@ -23,7 +23,7 @@ router.get("/listRequest", async (req, res, next) => {
  */
 router.put("/acceptRequest/:id", async (req, res, next) => {
   try {
-    let getRequest = await RequestModel.findByIdAndUpdate(req.params.id, {
+    await RequestModel.findByIdAndUpdate(req.params.id, {
       isAccepted: true,
     });
     res.json({ error: null, message: "accepted successfully" });
