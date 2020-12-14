@@ -69,6 +69,27 @@ router.get("/listAcceptedRequest", async (req, res, next) => {
 });
 /**
  * method : GET
+ * url : /client/trainer/listAcceptedRequest/:requestId
+ * Desc : Get accepted request by id
+ */
+router.get("/listAcceptedRequest/:requestId", async (req, res, next) => {
+  try {
+    let acceptedRequestDetails = await RequestModel.findOne({
+      isDeleted: false,
+      clientId: objectId(req.clientData.user._id),
+      _id: objectId(req.params.requestId),
+      isAccepted: true,
+    })
+      .populate("nutrition.nutritionWeeklyPlans")
+      .populate("trainerId");
+    res.json({ error: null, data: acceptedRequestDetails });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error Look at console" });
+  }
+});
+/**
+ * method : GET
  * url : /client/trainer/:id
  * Desc : fetch trainer details and his/her services
  */
