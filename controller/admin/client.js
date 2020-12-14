@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const clientModel = require("../../models/clientModel");
+const paymentModel = require("../../models/paymentModel");
 /**
  * method : GET
  * url : /admin/client
@@ -8,6 +9,21 @@ const clientModel = require("../../models/clientModel");
 router.get("/", async (req, res, next) => {
   let clientData = await clientModel.find({ isDeleted: false });
   res.json(clientData);
+});
+/**
+ * method : GET
+ * url : /admin/client/paymentList
+ * Desc : list of all payment done for services
+ */
+router.get("/paymentList", async (req, res, next) => {
+  let paymentList = await paymentModel.find({ isDeleted: false }).populate({
+    path: "request",
+    populate: {
+      path: "clientId trainerId",
+      select: { name: 1, role: 1 },
+    },
+  });
+  res.json({ error: null, data: paymentList });
 });
 /**
  * method : GET
