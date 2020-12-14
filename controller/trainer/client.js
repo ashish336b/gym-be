@@ -2,6 +2,7 @@ const router = require("express").Router();
 const requestModel = require("../../models/RequestModel");
 const nutritionPlanModel = require("../../models/nutritionPlanModel");
 const objectId = require("mongoose").mongo.ObjectId;
+const commentModel = require("../../models/commentsModel");
 /**
  * method : GET
  * url : /trainer/client/listRequest
@@ -62,5 +63,22 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
     console.log(error);
   }
   res.json(createNutritionPlan);
+});
+/**
+ * method : POST
+ * url : /trainer/client/comment/:requestId
+ * Desc : comment on reqeusted services
+ */
+router.post("/comment/:requestId", async (req, res, next) => {
+  req.body.request = req.params.requestId;
+  req.body.name = `${req.trainerData.user.name.firstName} ${req.trainerData.user.name.lastName}`;
+  let request = await requestModel.findById(req.params.requestId);
+  if (!request.isPaid && !request.isAccepted) {
+    return res.json({ error: true, message: "Cannot comment" });
+  }
+  let comment = await new commentModel(req.body).save();
+  request.comments.push(comment._id);
+  await request.save();
+  res.json({ error: null, message: "commented successfully" });
 });
 module.exports = router;
