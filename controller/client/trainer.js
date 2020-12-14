@@ -38,6 +38,8 @@ router.get("/listRequest", async (req, res, next) => {
     let getRequestList = await RequestModel.find({
       isDeleted: false,
       clientId: objectId(req.clientData.user._id),
+      isAccepted: false,
+      isDeclined: false,
     });
     res.json({ error: null, data: getRequestList });
   } catch (error) {
@@ -56,7 +58,9 @@ router.get("/listAcceptedRequest", async (req, res, next) => {
       isDeleted: false,
       clientId: objectId(req.clientData.user._id),
       isAccepted: true,
-    });
+    })
+      .populate("nutrition.nutritionWeeklyPlans")
+      .populate("trainerId");
     res.json({ error: null, data: acceptedRequest });
   } catch (error) {
     console.log(error);

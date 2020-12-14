@@ -28,6 +28,13 @@ const requestModel = new mongoose.Schema(
       currentWeight: { type: String },
       targetWeight: { type: String },
       description: { type: String },
+      nutritionWeeklyPlans: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "nutritionPlan",
+          default: [],
+        },
+      ],
     },
     comments: [
       { type: mongoose.Schema.Types.ObjectId, ref: "comments", default: [] },
