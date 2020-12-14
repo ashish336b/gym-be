@@ -79,6 +79,7 @@ router.get("/listAcceptedRequest", async (req, res, next) => {
         isAccepted: true,
       })
       .populate("nutrition.nutritionWeeklyPlans")
+      .populate("workout.workoutPlans")
       .populate("trainerId", { name: 1, email: 1, address: 1 })
       .populate("comments");
     res.json({ error: null, data: acceptedRequest });
@@ -102,6 +103,7 @@ router.get("/listAcceptedRequest/:requestId", async (req, res, next) => {
         isAccepted: true,
       })
       .populate("nutrition.nutritionWeeklyPlans")
+      .populate("workout.workoutPlans")
       .populate("trainerId", { name: 1, email: 1, address: 1 })
       .populate("comments");
     res.json({ error: null, data: acceptedRequestDetails });

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const requestModel = require("../../models/RequestModel");
 const nutritionPlanModel = require("../../models/nutritionPlanModel");
+const workoutPlanModel = require("../../models/workoutPlanModel");
 const objectId = require("mongoose").mongo.ObjectId;
 const commentModel = require("../../models/commentsModel");
 /**
@@ -66,8 +67,33 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
 });
 /**
  * method : POST
+ * url : /trainer/client/createWorkoutPlan/:requestId
+ * desc : trainer create day-1 day-2 plan for client
+ */
+router.post("/createWorkoutPlan/:requestId", async (req, res, next) => {
+  //check if requestId is paid or not
+  let request = await requestModel.findById(req.params.requestId);
+  if (!request.isPaid) {
+    return res.json({
+      error: true,
+      message: "cannot add workout plan on unpaid request",
+    });
+  }
+  req.body.request = req.params.requestId;
+  let createWorkoutPlan = await new workoutPlanModel(req.body).save();
+  try {
+    request.workout.workoutPlans.push(createWorkoutPlan._id);
+    await request.save();
+  } catch (error) {
+    await workoutPlanModel.findByIdAndRemove(createWorkoutPlan._id);
+    console.log(error);
+  }
+  res.json(createWorkoutPlan);
+});
+/**
+ * method : POST
  * url : /trainer/client/comment/:requestId
- * Desc : comment on reqeusted services
+ * Desc : comment on requested services
  */
 router.post("/comment/:requestId", async (req, res, next) => {
   req.body.request = req.params.requestId;

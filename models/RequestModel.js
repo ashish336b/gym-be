@@ -36,6 +36,24 @@ const requestModel = new mongoose.Schema(
         },
       ],
     },
+    workout: {
+      sessionType: {
+        type: String,
+        enum: ["weights", "hiit", "cardio", "sport"],
+      },
+      bodyTargetArea: {
+        type: String,
+        enum: ["abs", "total_body", "arms", "legs"],
+      },
+      description: { type: String },
+      workoutPlans: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "workoutPlan",
+          default: [],
+        },
+      ],
+    },
     comments: [
       { type: mongoose.Schema.Types.ObjectId, ref: "comment", default: [] },
     ],
