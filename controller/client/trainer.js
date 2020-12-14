@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const RequestModel = require("../../models/RequestModel");
+const requestModel = require("../../models/RequestModel");
 const serviceModel = require("../../models/serviceModel");
 const trainerModel = require("../../models/trainerModel");
 const objectId = require("mongoose").mongo.ObjectId;
@@ -21,7 +21,7 @@ router.post("/:id/requestServices/:serviceId", async (req, res, next) => {
   req.body.trainerId = req.params.id;
   req.body.serviceId = req.params.serviceId;
   try {
-    await new RequestModel(req.body).save();
+    await new requestModel(req.body).save();
     res.json({ error: null, message: "Request for service sent successfully" });
   } catch (error) {
     console.log(error);
@@ -35,7 +35,7 @@ router.post("/:id/requestServices/:serviceId", async (req, res, next) => {
  */
 router.get("/listRequest", async (req, res, next) => {
   try {
-    let getRequestList = await RequestModel.find({
+    let getRequestList = await requestModel.find({
       isDeleted: false,
       clientId: objectId(req.clientData.user._id),
       isAccepted: false,
@@ -54,11 +54,12 @@ router.get("/listRequest", async (req, res, next) => {
  */
 router.get("/listAcceptedRequest", async (req, res, next) => {
   try {
-    let acceptedRequest = await RequestModel.find({
-      isDeleted: false,
-      clientId: objectId(req.clientData.user._id),
-      isAccepted: true,
-    })
+    let acceptedRequest = await requestModel
+      .find({
+        isDeleted: false,
+        clientId: objectId(req.clientData.user._id),
+        isAccepted: true,
+      })
       .populate("nutrition.nutritionWeeklyPlans")
       .populate("trainerId");
     res.json({ error: null, data: acceptedRequest });
@@ -74,12 +75,13 @@ router.get("/listAcceptedRequest", async (req, res, next) => {
  */
 router.get("/listAcceptedRequest/:requestId", async (req, res, next) => {
   try {
-    let acceptedRequestDetails = await RequestModel.findOne({
-      isDeleted: false,
-      clientId: objectId(req.clientData.user._id),
-      _id: objectId(req.params.requestId),
-      isAccepted: true,
-    })
+    let acceptedRequestDetails = await requestModel
+      .findOne({
+        isDeleted: false,
+        clientId: objectId(req.clientData.user._id),
+        _id: objectId(req.params.requestId),
+        isAccepted: true,
+      })
       .populate("nutrition.nutritionWeeklyPlans")
       .populate("trainerId");
     res.json({ error: null, data: acceptedRequestDetails });
@@ -104,5 +106,25 @@ router.get("/:id", async (req, res, next) => {
     trainer,
     services,
   });
+});
+/**
+ * method : PUT
+ * url : /client/trainer/markAsComplete/:requestId
+ * Desc : mark as complete from client
+ */
+router.put("/markAsComplete/:requestId", async (req, res, next) => {
+  try {
+    let request = await requestModel.findById(req.params.requestId);
+    if (request.isAccepted && request.isPaid) {
+      request.isCompleted = true;
+      await request.save();
+      res.json({ error: null, message: "Mark as completed" });
+    } else {
+      res.json({ error: true, message: "cannot mark as completed" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error Look at console" });
+  }
 });
 module.exports = router;
