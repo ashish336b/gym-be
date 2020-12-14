@@ -2,6 +2,7 @@ const router = require("express").Router();
 const requestModel = require("../../models/RequestModel");
 const serviceModel = require("../../models/serviceModel");
 const trainerModel = require("../../models/trainerModel");
+const commentModel = require("../../models/commentsModel");
 const objectId = require("mongoose").mongo.ObjectId;
 /**
  * method : GET
@@ -10,6 +11,23 @@ const objectId = require("mongoose").mongo.ObjectId;
  */
 router.get("/", async (req, res, next) => {
   res.json(await trainerModel.find({ isDeleted: false }));
+});
+/**
+ * method : POST
+ * url : /client/trainer/comment/:requestId
+ * Description : comment on requested service by client
+ */
+router.post("/comment/:requestId", async (req, res, next) => {
+  req.body.request = req.params.requestId;
+  req.body.name = `${req.clientData.user.name.firstName} ${req.clientData.user.name.lastName}`;
+  let request = await requestModel.findById(req.params.requestId);
+  if (!request.isPaid && !request.isAccepted) {
+    return res.json({ error: true, message: "Cannot comment" });
+  }
+  let comment = await new commentModel(req.body).save();
+  request.comments.push(comment._id);
+  await request.save();
+  res.json({ error: null, message: "commented successfully" });
 });
 /**
  * method : POST
@@ -61,7 +79,8 @@ router.get("/listAcceptedRequest", async (req, res, next) => {
         isAccepted: true,
       })
       .populate("nutrition.nutritionWeeklyPlans")
-      .populate("trainerId");
+      .populate("trainerId", { name: 1, email: 1, address: 1 })
+      .populate("comments");
     res.json({ error: null, data: acceptedRequest });
   } catch (error) {
     console.log(error);
@@ -83,7 +102,7 @@ router.get("/listAcceptedRequest/:requestId", async (req, res, next) => {
         isAccepted: true,
       })
       .populate("nutrition.nutritionWeeklyPlans")
-      .populate("trainerId");
+      .populate("trainerId", { name: 1, email: 1, address: 1 });
     res.json({ error: null, data: acceptedRequestDetails });
   } catch (error) {
     console.log(error);

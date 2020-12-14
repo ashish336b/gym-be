@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const adminModel = new mongoose.Schema(
+const commentsModel = new mongoose.Schema(
   {
-    requestId: { type: String },
+    request: { type: mongoose.Types.ObjectId, ref: "request" },
     name: { type: String },
     description: { type: String },
     isDeleted: { type: Boolean, default: false },
@@ -13,4 +13,4 @@ const adminModel = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("admin", adminModel);
+module.exports = mongoose.model("comment", commentsModel);

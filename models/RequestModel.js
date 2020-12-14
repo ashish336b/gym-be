@@ -37,7 +37,7 @@ const requestModel = new mongoose.Schema(
       ],
     },
     comments: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "comments", default: [] },
+      { type: mongoose.Schema.Types.ObjectId, ref: "comment", default: [] },
     ],
     isAccepted: { type: Boolean, default: false },
     isDeclined: { type: Boolean, default: false },
