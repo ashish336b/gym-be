@@ -73,7 +73,6 @@ router.get("/cancelPayment", async (req, res, next) => {
 router.get("/successPayment", async (req, res, next) => {
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
-  console.log(req.query.requests);
   const execute_payment_json = {
     payer_id: payerId,
     transactions: [
@@ -99,6 +98,8 @@ router.get("/successPayment", async (req, res, next) => {
           await new paymentModel({
             paymentAmount: req.query.amount,
             request: requestIds[i],
+            payerId: payerId,
+            paymentId: paymentId,
           }).save();
         }
         res.send("your payment is successfull.");
