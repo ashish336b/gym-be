@@ -32,8 +32,8 @@ router.post("/", verifyClientToken, async (req, res, next) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:3000/client/payment/successPayment?amount=${totalPrice}&requests=${req.body.request}`,
-      cancel_url: "http://localhost:3000/client/payment/cancelPayment",
+      return_url: `${config.baseUrl}/client/payment/successPayment?amount=${totalPrice}&requests=${req.body.request}`,
+      cancel_url: `${config.baseUrl}/client/payment/cancelPayment`,
     },
     transactions: [
       {
