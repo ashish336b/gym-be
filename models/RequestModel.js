@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
-
+/**
+ * clientId,trainerId,serviceId,
+ * nutrition.nutritionPlan,
+ * workout.workoutPlan,comment
+ */
 const requestModel = new mongoose.Schema(
   {
     clientId: {
@@ -12,7 +16,11 @@ const requestModel = new mongoose.Schema(
       required: true,
       ref: "trainer",
     },
-    serviceId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    serviceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "service",
+      required: true,
+    },
     requestType: { type: String, required: true },
     nutrition: {
       sessionType: {

@@ -25,8 +25,56 @@ router.get("/listRequest", async (req, res, next) => {
   }
 });
 /**
+ * method : GET
+ * url : /trainer/client/listAcceptedRequest
+ */
+router.get("/listAcceptedRequest", async (req, res, next) => {
+  try {
+    let getRequest = await requestModel
+      .find({
+        isDeleted: false,
+        trainerId: objectId(req.trainerData.user._id),
+        isDeclined: false,
+        isAccepted: true,
+      })
+      .populate("clientId", { name: 1, email: 1, address: 1 })
+      .populate("comments")
+      .populate("serviceId")
+      .populate("nutrition.nutritionWeeklyPlans")
+      .populate("workout.workoutPlans");
+    res.json({ error: null, data: getRequest });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error look at console" });
+  }
+});
+/**
+ * method : GET
+ * url : /trainer/client/listDeclinedRequest
+ */
+router.get("/listDeclinedRequest", async (req, res, next) => {
+  try {
+    let getRequest = await requestModel
+      .find({
+        isDeleted: false,
+        trainerId: objectId(req.trainerData.user._id),
+        isDeclined: true,
+        isAccepted: false,
+      })
+      .populate("clientId", { name: 1, email: 1, address: 1 })
+      .populate("comments")
+      .populate("serviceId")
+      .populate("nutrition.nutritionWeeklyPlans")
+      .populate("workout.workoutPlans");
+    res.json({ error: null, data: getRequest });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error look at console" });
+  }
+});
+/**
  * method : PUT
- * url : /trainer/client/acceptRequest
+ * url : /trainer/client/acceptRequest/:id
  */
 router.put("/acceptRequest/:id", async (req, res, next) => {
   try {
@@ -35,6 +83,23 @@ router.put("/acceptRequest/:id", async (req, res, next) => {
       isDeclined: false,
     });
     res.json({ error: null, message: "accepted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error Look at console" });
+  }
+});
+/**
+ * method : put
+ * url : /trainer/client/declineRequest/:requestId
+ * Desc : Decline Request
+ */
+router.put("/declineRequest/:requestId", async (req, res, next) => {
+  try {
+    await requestModel.findByIdAndUpdate(req.params.requestId, {
+      isAccepted: false,
+      isDeclined: true,
+    });
+    res.json({ error: null, message: "Declined successfully" });
   } catch (error) {
     console.log(error);
     res.json({ error: true, message: "Error Look at console" });
