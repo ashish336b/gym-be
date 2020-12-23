@@ -33,10 +33,47 @@ router.post("/login", async (req, res, next) => {
 });
 /**
  * method : get
- * url : /me
+ * url : /admin/me
  * Desc: get logged in admin data
  */
 router.get("/me", verifyAdminToken, async (req, res, next) => {
   res.json(req.adminData.user);
+});
+/**
+ * method : POST
+ * url : admin/forgotPassword
+ */
+router.post("/forgotPassword", async (req, res, next) => {
+  try {
+    let forgotPassword = await new Auth(adminModel).forgotPassword({
+      email: req.body.email,
+      isDeleted: false,
+    });
+    res.json(forgotPassword);
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error Look at console" });
+  }
+});
+/**
+ * method : GET
+ * url : admin/forgotPassword/:id
+ */
+router.put("/forgotPassword/:id", async (req, res, next) => {
+  try {
+    let data = await new Auth(adminModel).updatePassword(
+      {
+        token: req.params.id,
+      },
+      req
+    );
+    if (!data) {
+      res.json({ error: true, message: "Cannot Update Mail" });
+    }
+    res.json(data);
+  } catch (error) {
+    res.json({ error: true, message: "error" });
+    console.log(error);
+  }
 });
 module.exports = router;
