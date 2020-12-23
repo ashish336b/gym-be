@@ -4,7 +4,7 @@ const { verifyTrainerToken } = require("../../middleware/authGuard");
 const Auth = require("../../helpers/Auth");
 /**
  * method : POST
- * url : /admin/register
+ * url : /trainer/register
  */
 router.post("/register", async (req, res, next) => {
   let register = await new Auth(trainerModel).register(req);
@@ -13,7 +13,7 @@ router.post("/register", async (req, res, next) => {
 });
 /**
  * method : POST
- * url : /admin/login
+ * url : /trainer/login
  */
 router.post("/login", async (req, res, next) => {
   let token = await new Auth(trainerModel).login(
@@ -32,9 +32,47 @@ router.post("/login", async (req, res, next) => {
 });
 /**
  * method : get
- * url : /me
+ * url : /trainer/me
  */
 router.get("/me", verifyTrainerToken, async (req, res, next) => {
   res.json(req.trainerData.user);
+});
+/**
+ * method : POST
+ * url : trainer/forgotPassword
+ */
+router.post("/forgotPassword", async (req, res, next) => {
+  try {
+    let forgotPassword = await new Auth(trainerModel).forgotPassword({
+      email: req.body.email,
+      isDeleted: false,
+      isApproved: true,
+    });
+    res.json(forgotPassword);
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error Look at console" });
+  }
+});
+/**
+ * method : GET
+ * url : /trainer/forgotPassword/:id
+ */
+router.put("/forgotPassword/:id", async (req, res, next) => {
+  try {
+    let data = await new Auth(trainerModel).updatePassword(
+      {
+        token: req.params.id,
+      },
+      req
+    );
+    if (!data) {
+      res.json({ error: true, message: "Cannot Update Mail" });
+    }
+    res.json(data);
+  } catch (error) {
+    res.json({ error: true, message: "error" });
+    console.log(error);
+  }
 });
 module.exports = router;
