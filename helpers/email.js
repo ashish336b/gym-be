@@ -33,7 +33,7 @@ class Mailer {
         subject: 'Subject',
         file: 'file to use for templating',
         data: {key : "data to send to templating file"},
-    } info 
+    } info
      */
   async sendMail(info) {
     await this.createConnection().sendMail({
