@@ -3,10 +3,7 @@ const mongoose = require("mongoose");
 const paymentModel = new mongoose.Schema(
   {
     paymentAmount: { type: String },
-    request: { type: String, ref: "request" },
-    payerId: { type: String },
-    paymentId: { type: String },
-    isReceivedByTrainer: { type: Boolean, default: false },
+    clientAdminPayment: { type: String, ref: "payment" },
     isDeleted: { type: Boolean, default: false },
   },
   {
@@ -15,4 +12,4 @@ const paymentModel = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("payment", paymentModel);
+module.exports = mongoose.model("adminPaymentModel", paymentModel);

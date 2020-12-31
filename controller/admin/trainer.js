@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const trainerModel = require("../../models/trainerModel");
 const paginate = require("../../helpers/paginate");
+const adminPaymentModel = require("../../models/adminPaymentModel");
+const paymentModel = require("../../models/paymentModel");
 /**
  * method : GET
  * url : /admin/trainer
@@ -64,6 +66,27 @@ router.delete("/:id", async (req, res, next) => {
   } catch (error) {
     console.log(error);
     res.json({ message: "cannot delete", error: true });
+  }
+});
+/**
+ * method : POST
+ * url : /admin/trainer/payment/:id
+ */
+router.post("/payment/:paymentId/:trainerId", async (req, res, next) => {
+  try {
+    let payment = await paymentModel.findById(req.params.paymentId);
+    let amount = parseInt(payment.paymentAmount);
+    amount = amount - 0.1 * amount;
+    await new adminPaymentModel({
+      paymentAmount: amount,
+      clientAdminPayment: req.params.paymentId,
+    }).save();
+    payment.isReceivedByTrainer = true;
+    await payment.save();
+    res.json({ error: null, message: "payment to trainer successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error" });
   }
 });
 module.exports = router;

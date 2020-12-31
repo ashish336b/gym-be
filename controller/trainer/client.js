@@ -131,15 +131,6 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
       console.log(error);
     }
   }
-  /* req.body.request = req.params.requestId;
-  let createNutritionPlan = await new nutritionPlanModel(req.body).save();
-  try {
-    request.nutrition.nutritionWeeklyPlans.push(createNutritionPlan._id);
-    await request.save();
-  } catch (error) {
-    await nutritionPlanModel.findByIdAndRemove(createNutritionPlan._id);
-    console.log(error);
-  } */
   res.json({ error: null, message: "successfully plan added" });
 });
 /**
