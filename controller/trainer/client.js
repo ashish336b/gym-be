@@ -206,16 +206,28 @@ router.post("/createWorkoutPlan/:requestId", async (req, res, next) => {
       message: "cannot add workout plan on unpaid request",
     });
   }
-  req.body.request = req.params.requestId;
-  let createWorkoutPlan = await new workoutPlanModel(req.body).save();
-  try {
-    request.workout.workoutPlans.push(createWorkoutPlan._id);
-    await request.save();
-  } catch (error) {
-    await workoutPlanModel.findByIdAndRemove(createWorkoutPlan._id);
-    console.log(error);
+  for (let i = 0; i < req.body.items.length; i++) {
+    let dataToSave = req.body.items[i];
+    dataToSave.request = req.params.requestId;
+    let createWorkoutPlan = await new workoutPlanModel(dataToSave).save();
+    try {
+      request.workout.workoutPlans.push(createWorkoutPlan._id);
+      await request.save();
+    } catch (error) {
+      await workoutPlanModel.findByIdAndRemove(createWorkoutPlan._id);
+      console.log(error);
+    }
   }
-  res.json(createWorkoutPlan);
+  // req.body.request = req.params.requestId;
+  // let createWorkoutPlan = await new workoutPlanModel(req.body).save();
+  // try {
+  //   request.workout.workoutPlans.push(createWorkoutPlan._id);
+  //   await request.save();
+  // } catch (error) {
+  //   await workoutPlanModel.findByIdAndRemove(createWorkoutPlan._id);
+  //   console.log(error);
+  // }
+  res.json({ error: null, message: "successfully Added" });
 });
 /**
  * method : POST
