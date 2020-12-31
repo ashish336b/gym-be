@@ -132,6 +132,56 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
 });
 /**
  * method : POST
+ * url : /trainer/client/addMeals/:requestId/:mealId
+ * Desc : add meals to request id
+ */
+router.post("/addMeals/:nutritionId/:requestId", async (req, res, next) => {
+  let request = await requestModel.findById(req.params.requestId);
+  if (
+    !request.nutrition.nutritionWeeklyPlans.includes(req.params.nutritionId)
+  ) {
+    return res.json({
+      error: true,
+      message: "cannot edit unknown nutrition plan",
+    });
+  }
+  let nutritionPlan = await nutritionPlanModel.findById(req.params.nutritionId);
+  nutritionPlan.meals.push({ name: req.body.name, items: req.body.items });
+  await nutritionPlan.save();
+  res.json({ error: null, message: "Meals added successfully" });
+});
+/**
+ * method : POST
+ * url : /trainer/client/addItemToMeals/:nutritionId/:mealsId/:requestId
+ * Desc : added item to created meals
+ */
+router.post(
+  "/addItemToMeals/:nutritionId/:mealsId/:requestId",
+  async (req, res, next) => {
+    let request = await requestModel.findById(req.params.requestId);
+    if (
+      !request.nutrition.nutritionWeeklyPlans.includes(req.params.nutritionId)
+    ) {
+      return res.json({
+        error: true,
+        message: "cannot edit unknown nutrition plan",
+      });
+    }
+    let nutritionPlan = await nutritionPlanModel.findById(
+      req.params.nutritionId
+    );
+    let meals = nutritionPlan.meals.filter((el) => {
+      return el._id.toString() === req.params.mealsId;
+    });
+    if (meals.length != 0) {
+      meals[0].items.push(...req.body.items);
+    }
+    await nutritionPlan.save();
+    res.json({ error: null, message: "successfully" });
+  }
+);
+/**
+ * method : POST
  * url : /trainer/client/createWorkoutPlan/:requestId
  * desc : trainer create day-1 day-2 plan for client
  */
@@ -171,5 +221,21 @@ router.post("/comment/:requestId", async (req, res, next) => {
   request.comments.push(comment._id);
   await request.save();
   res.json({ error: null, message: "commented successfully" });
+});
+/**
+ * method : PUT
+ * url : /trainer/client/changeTitle/:requestId
+ * Desc : Change title of request
+ */
+router.put("/changeTitle/:requestId", async (req, res, next) => {
+  try {
+    let request = await requestModel.findById(req.params.requestId);
+    request.requestTitle = req.body.requestTitle;
+    await request.save();
+    res.json({ error: null, message: "Title Changed" });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: true, message: "Error occured!" });
+  }
 });
 module.exports = router;

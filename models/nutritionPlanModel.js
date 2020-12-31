@@ -4,7 +4,13 @@ const nutritionPlanModel = new mongoose.Schema(
   {
     request: { type: String, ref: "request" },
     title: { type: String }, //eg Day-1
-    meals: [{ id: mongoose.Types.ObjectId }],
+    meals: [
+      {
+        id: mongoose.Types.ObjectId,
+        name: { type: String },
+        items: [{ id: mongoose.Types.ObjectId }],
+      },
+    ],
     isDeleted: { type: Boolean, default: false },
   },
   {

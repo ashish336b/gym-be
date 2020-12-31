@@ -22,6 +22,7 @@ const requestModel = new mongoose.Schema(
       required: true,
     },
     requestType: { type: String, required: true },
+    requestTitle: { type: String },
     nutrition: {
       sessionType: {
         type: String,
