@@ -119,7 +119,19 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
       message: "cannot add nutrition plan on unpaid request",
     });
   }
-  req.body.request = req.params.requestId;
+  for (let i = 0; i < req.body.items.length; i++) {
+    dataToSave = req.body.items[i];
+    dataToSave.request = req.params.requestId;
+    let createNutritionPlan = await new nutritionPlanModel(dataToSave).save();
+    try {
+      request.nutrition.nutritionWeeklyPlans.push(createNutritionPlan._id);
+      await request.save();
+    } catch (error) {
+      await nutritionPlanModel.findByIdAndRemove(createNutritionPlan._id);
+      console.log(error);
+    }
+  }
+  /* req.body.request = req.params.requestId;
   let createNutritionPlan = await new nutritionPlanModel(req.body).save();
   try {
     request.nutrition.nutritionWeeklyPlans.push(createNutritionPlan._id);
@@ -127,8 +139,8 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
   } catch (error) {
     await nutritionPlanModel.findByIdAndRemove(createNutritionPlan._id);
     console.log(error);
-  }
-  res.json(createNutritionPlan);
+  } */
+  res.json({ error: null, message: "successfully plan added" });
 });
 /**
  * method : POST
