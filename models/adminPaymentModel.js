@@ -4,6 +4,7 @@ const paymentModel = new mongoose.Schema(
   {
     paymentAmount: { type: String },
     clientAdminPayment: { type: String, ref: "payment" },
+    trainer: { type: mongoose.Types.ObjectId, ref: "trainer" },
     isDeleted: { type: Boolean, default: false },
   },
   {

@@ -43,4 +43,9 @@ router.use(
   verifyTrainerToken,
   require("../controller/trainer/client")
 );
+router.use(
+  "/trainer/payment",
+  verifyTrainerToken,
+  require("../controller/trainer/payment")
+);
 module.exports = router;

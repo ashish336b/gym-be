@@ -80,6 +80,7 @@ router.post("/payment/:paymentId/:trainerId", async (req, res, next) => {
     await new adminPaymentModel({
       paymentAmount: amount,
       clientAdminPayment: req.params.paymentId,
+      trainer: req.params.trainerId,
     }).save();
     payment.isReceivedByTrainer = true;
     await payment.save();
