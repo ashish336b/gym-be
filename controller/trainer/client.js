@@ -134,6 +134,36 @@ router.post("/createNutritionPlan/:requestId", async (req, res, next) => {
   res.json({ error: null, message: "successfully plan added" });
 });
 /**
+ * method : put
+ * url : /trainer/client/createNutritionPlan/:requestId
+ * desc : trainer create day-1 day-2 meals for client
+ */
+router.put("/createNutritionPlan/:requestId", async (req, res, next) => {
+  //check if requestId is paid or not
+  let request = await requestModel.findById(req.params.requestId);
+  request.nutrition.nutritionWeeklyPlans = [];
+  await request.save();
+  if (!request.isPaid) {
+    return res.json({
+      error: true,
+      message: "cannot add nutrition plan on unpaid request",
+    });
+  }
+  for (let i = 0; i < req.body.items.length; i++) {
+    dataToSave = req.body.items[i];
+    dataToSave.request = req.params.requestId;
+    let createNutritionPlan = await new nutritionPlanModel(dataToSave).save();
+    try {
+      request.nutrition.nutritionWeeklyPlans.push(createNutritionPlan._id);
+      await request.save();
+    } catch (error) {
+      await nutritionPlanModel.findByIdAndRemove(createNutritionPlan._id);
+      console.log(error);
+    }
+  }
+  res.json({ error: null, message: "successfully plan added" });
+});
+/**
  * method : POST
  * url : /trainer/client/addMeals/:requestId/:mealId
  * Desc : add meals to request id
@@ -191,6 +221,45 @@ router.post(
 router.post("/createWorkoutPlan/:requestId", async (req, res, next) => {
   //check if requestId is paid or not
   let request = await requestModel.findById(req.params.requestId);
+  if (!request.isPaid) {
+    return res.json({
+      error: true,
+      message: "cannot add workout plan on unpaid request",
+    });
+  }
+  for (let i = 0; i < req.body.items.length; i++) {
+    let dataToSave = req.body.items[i];
+    dataToSave.request = req.params.requestId;
+    let createWorkoutPlan = await new workoutPlanModel(dataToSave).save();
+    try {
+      request.workout.workoutPlans.push(createWorkoutPlan._id);
+      await request.save();
+    } catch (error) {
+      await workoutPlanModel.findByIdAndRemove(createWorkoutPlan._id);
+      console.log(error);
+    }
+  }
+  // req.body.request = req.params.requestId;
+  // let createWorkoutPlan = await new workoutPlanModel(req.body).save();
+  // try {
+  //   request.workout.workoutPlans.push(createWorkoutPlan._id);
+  //   await request.save();
+  // } catch (error) {
+  //   await workoutPlanModel.findByIdAndRemove(createWorkoutPlan._id);
+  //   console.log(error);
+  // }
+  res.json({ error: null, message: "successfully Added" });
+});
+/**
+ * method : put
+ * url : /trainer/client/createWorkoutPlan/:requestId
+ * desc : trainer create day-1 day-2 plan for client ninja tech
+ */
+router.put("/createWorkoutPlan/:requestId", async (req, res, next) => {
+  //check if requestId is paid or not
+  let request = await requestModel.findById(req.params.requestId);
+  request.workout.workoutPlans = [];
+  await request.save();
   if (!request.isPaid) {
     return res.json({
       error: true,
