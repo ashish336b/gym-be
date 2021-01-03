@@ -2,6 +2,7 @@ const router = require("express").Router();
 const clientModel = require("../../models/clientModel");
 const { verifyClientToken } = require("../../middleware/authGuard");
 const Auth = require("../../helpers/Auth");
+const config = require("../../config");
 /**
  * method : POST
  * url : /client/register
@@ -45,10 +46,14 @@ router.get("/me", verifyClientToken, async (req, res, next) => {
  */
 router.post("/forgotPassword", async (req, res, next) => {
   try {
-    let forgotPassword = await new Auth(clientModel).forgotPassword({
-      email: req.body.email,
-      isDeleted: false,
-    });
+    let forgotPassword = await new Auth(clientModel).forgotPassword(
+      {
+        email: req.body.email,
+        isDeleted: false,
+      },
+      `${config.mailBaseUrl}/client/reset-password`,
+      req
+    );
     res.json(forgotPassword);
   } catch (error) {
     console.log(error);

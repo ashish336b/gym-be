@@ -34,7 +34,7 @@ class Auth {
       return false;
     }
   }
-  async forgotPassword(params, req) {
+  async forgotPassword(params, url, req) {
     try {
       const user = await this.model.findOne(params);
       if (!user) {
@@ -43,7 +43,7 @@ class Auth {
       let token = await jwt.sign({ email: params.email }, "12helloworld12", {
         expiresIn: "1h",
       });
-      let url = `http://localhost:3000/admin/forgotPassword/${token}`;
+      url = `${url}/${token}`;
       let html = `<!doctype html>
       <html>
         <head>
@@ -54,7 +54,7 @@ class Auth {
             <h1 style="font-size: 18px; font-weight: bold; margin-top: 20px">Shrijan Malakar Fitness House</h1>
             <p>Your token is:</p>
             
-            <p>${token}</p>
+            <a href="${url}">Reset Link</a>
             <h1 style="color : red">Warning! Remember Not to share this token</h1>
           </div>
           <!-- Example of invalid for email html/css, will be detected by Mailtrap: -->
