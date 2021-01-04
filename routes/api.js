@@ -28,7 +28,16 @@ router.use(
   verifyClientToken,
   require("../controller/client/trainer")
 );
-router.use("/client/payment", require("../controller/client/payment"));
+router.use(
+  "/client/payment",
+  verifyClientToken,
+  require("../controller/client/payment")
+);
+router.use(
+  "/client/goals",
+  verifyClientToken,
+  require("../controller/client/goal")
+);
 /**
  * Trainer Routes
  */
